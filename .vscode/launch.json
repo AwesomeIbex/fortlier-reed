@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "name": "Remote debug",
+            "type": "gdb",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "target": "${workspaceRoot}/target/thumbv7em-none-eabi/debug/rusty-blink",
+            "gdbpath": "/usr/bin/gdb-multiarch"
+        }
+    ]
+}
