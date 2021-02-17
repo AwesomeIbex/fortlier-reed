@@ -9,15 +9,10 @@ use cortex_m_rt::entry;
 use embedded_hal::digital::v2::OutputPin;
 #[allow(unused_imports)]
 use panic_halt;
-use stm32f4xx_hal::{delay::Delay, prelude::*, stm32};
+use stm32f4xx_hal::{prelude::*, stm32};
 use stm32f4xx_hal::adc::Adc;
-use stm32f4xx_hal::adc::config::{AdcConfig, Resolution, SampleTime};
-use stm32f4xx_hal::gpio::{Analog, Speed, Output, PushPull};
-use stm32f4xx_hal::gpio::gpioa::{PA0, PA1};
-use stm32f4xx_hal::stm32::{Peripherals, ADC1, GPIOA, GPIOC, RCC};
-use stm32f4xx_hal::gpio::gpioc::PC13;
-use stm32f4xx_hal::time::MegaHertz;
-use stm32f4xx_hal::rcc::{Clocks, Rcc};
+use stm32f4xx_hal::adc::config::{AdcConfig};
+use stm32f4xx_hal::stm32::{Peripherals};
 
 static GADC: Mutex<RefCell<Option<Adc<stm32::ADC1>>>> = Mutex::new(RefCell::new(None));
 
@@ -25,9 +20,9 @@ static GADC: Mutex<RefCell<Option<Adc<stm32::ADC1>>>> = Mutex::new(RefCell::new(
 fn main() -> ! {
     let hertz = 48;
 
-    let (cp, dp) = get_peripherals();
+    let (_, dp) = get_peripherals();
     let rcc = dp.RCC.constrain();
-    let clocks = rcc.cfgr.sysclk(hertz.mhz()).freeze();
+    let _clocks = rcc.cfgr.sysclk(hertz.mhz()).freeze();
 
     let gpioc = dp.GPIOC.split();
     let mut led = gpioc.pc13.into_push_pull_output();
@@ -49,10 +44,11 @@ fn main() -> ! {
             if let Some(ref mut adc) = GADC.borrow(cs).borrow_mut().deref_mut() {
                 let _analog_reading: u32 = adc.read(&mut analog).unwrap() as u32;
 
+                // Magnetic field detected
                 if digital.is_high().unwrap() {
-                    led.set_low().unwrap();
-                } else {
                     led.set_high().unwrap();
+                } else {
+                    led.set_low().unwrap();
                 }
             }
         });
