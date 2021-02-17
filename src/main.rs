@@ -20,9 +20,6 @@ use stm32f4xx_hal::time::MegaHertz;
 use stm32f4xx_hal::rcc::{Clocks, Rcc};
 
 static GADC: Mutex<RefCell<Option<Adc<stm32::ADC1>>>> = Mutex::new(RefCell::new(None));
-const MIDDLE_RANGE: u32 = 512;
-const MAX_RANGE: u32 = 4000;
-const LOWEST_RANGE: u32 = 100;
 
 #[entry]
 fn main() -> ! {
@@ -40,7 +37,7 @@ fn main() -> ! {
 
     let gpioa = dp.GPIOA.split();
     //TODO look at open drain
-    let digital = gpioa.pa3.into_push_pull_output(); // TODO convert to digital read
+    let digital = gpioa.pa3.into_push_pull_output();
     let mut analog = gpioa.pa0.into_analog();
 
     free(|cs| {
@@ -51,7 +48,7 @@ fn main() -> ! {
         free(|cs| {
             if let Some(ref mut adc) = GADC.borrow(cs).borrow_mut().deref_mut() {
                 let _analog_reading: u32 = adc.read(&mut analog).unwrap() as u32;
-                // if the digital is high turn the light on
+
                 if digital.is_high().unwrap() {
                     led.set_low().unwrap();
                 } else {
