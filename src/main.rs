@@ -39,38 +39,26 @@ fn main() -> ! {
     let adc = Adc::adc1(dp.ADC1, true, adcconfig);
 
     let gpioa = dp.GPIOA.split();
-    let mut joystick_x = gpioa.pa0.into_analog();
-    let mut joystick_y = gpioa.pa1.into_analog();
+    //TODO look at open drain
+    let digital = gpioa.pa3.into_push_pull_output(); // TODO convert to digital read
+    let mut analog = gpioa.pa0.into_analog();
 
     free(|cs| {
         *GADC.borrow(cs).borrow_mut() = Some(adc);
     });
 
-    let mut delay = Delay::new(cp.SYST, clocks);
-    let mut delay_time = 500_u32;
     loop {
         free(|cs| {
             if let Some(ref mut adc) = GADC.borrow(cs).borrow_mut().deref_mut() {
-                let x: u32 = adc.read(&mut joystick_x).unwrap() as u32;
-                let y: u32 = adc.read(&mut joystick_y).unwrap() as u32;
-
-                if y > MAX_RANGE {
-                    delay_time = (delay_time + 50) as u32
-                } else if y < LOWEST_RANGE {
-                    delay_time = (delay_time - 50) as u32
-                }
-                if x > MAX_RANGE {
-                    delay_time = 5000_u32;
-                } else if x < LOWEST_RANGE {
-                    delay_time = 100_u32;
+                let _analog_reading: u32 = adc.read(&mut analog).unwrap() as u32;
+                // if the digital is high turn the light on
+                if digital.is_high().unwrap() {
+                    led.set_low().unwrap();
+                } else {
+                    led.set_high().unwrap();
                 }
             }
         });
-
-        led.set_high().unwrap();
-        delay.delay_ms(delay_time);
-        led.set_low().unwrap();
-        delay.delay_ms(delay_time);
     }
 }
 

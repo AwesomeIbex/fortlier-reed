@@ -104,6 +104,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "fortlier-reed"
+version = "0.1.0"
+dependencies = [
+ "cortex-m 0.6.7",
+ "cortex-m-rt",
+ "embedded-hal",
+ "panic-halt",
+ "stm32f4xx-hal",
+]
+
+[[package]]
 name = "generic-array"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -189,17 +200,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "138e3e0acb6c9fb258b19b67cb8abd63c00679d2851805ea151465464fe9030a"
 dependencies = [
  "semver",
-]
-
-[[package]]
-name = "rusty-blink"
-version = "0.1.0"
-dependencies = [
- "cortex-m 0.6.7",
- "cortex-m-rt",
- "embedded-hal",
- "panic-halt",
- "stm32f4xx-hal",
 ]
 
 [[package]]
